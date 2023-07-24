@@ -1,0 +1,5 @@
+PROD_DB_HOST=containers-us-west-94.railway.app
+PROD_DB_PORT=6023
+PROD_DB_NAME=railway
+PROD_DB_USERNAME=root
+PROD_DB_PASSWORD=dJOG6tdAjjdFZK6FvYaO
