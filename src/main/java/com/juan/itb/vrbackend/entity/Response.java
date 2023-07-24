@@ -1,7 +1,7 @@
 package com.juan.itb.vrbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.juan.itb.vrbackend.dto.ResponseStatus;
+import com.juan.itb.vrbackend.dto.enums.ResponseStatus;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
