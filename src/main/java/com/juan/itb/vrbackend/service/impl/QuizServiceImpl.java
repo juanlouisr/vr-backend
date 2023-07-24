@@ -2,6 +2,9 @@ package com.juan.itb.vrbackend.service.impl;
 
 import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
+import com.juan.itb.vrbackend.dto.response.OptionResponse;
+import com.juan.itb.vrbackend.dto.response.QuestionDto;
+import com.juan.itb.vrbackend.dto.response.QuizDto;
 import com.juan.itb.vrbackend.entity.Option;
 import com.juan.itb.vrbackend.entity.Question;
 import com.juan.itb.vrbackend.entity.Quiz;
@@ -12,6 +15,11 @@ import com.juan.itb.vrbackend.repository.QuizRepository;
 import com.juan.itb.vrbackend.repository.ResponseRepository;
 import com.juan.itb.vrbackend.service.api.QuizService;
 import com.juan.itb.vrbackend.util.BeanMapper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +76,23 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
+  public Mono<QuizDto> getQuiz(Long id) {
+    Mono<QuizDto> quizMono = quizRepository.findById(id)
+        .map(quiz -> BeanMapper.map(quiz, QuizDto.class));
+    Mono<List<QuestionDto>> questions = questionRepository.findQuestionByQuizId(id)
+        .map(question -> BeanMapper.map(question, QuestionDto.class)).collectList();
+
+    return Mono.zip(quizMono, questions)
+        .doOnNext(tuple -> tuple.getT1().setQuestions(tuple.getT2()))
+        .flatMap(tuple -> Flux.fromIterable(tuple.getT2()).map(QuestionDto::getId).collectList()
+            .flatMap(questionIds -> optionRepository.findAllByQuestionIdIn(questionIds)
+                .map(option -> BeanMapper.map(option, OptionResponse.class))
+                .collectList()
+                .doOnNext(options -> mapOptionsToQuestions(tuple.getT2(), options))
+                .thenReturn(tuple.getT1())));
+  }
+
+  @Override
   public Mono<Integer> getQuizScoreForUser(Long userId, Long quizId) {
     return responseRepository.calculateScore(userId, quizId);
   }
@@ -76,6 +101,18 @@ public class QuizServiceImpl implements QuizService {
   public Mono<Response> createResponse(CreateResponseRequest createResponseRequest) {
     return responseRepository.save(BeanMapper.map(createResponseRequest, Response.class))
         .doOnNext(response -> log.info("quiz response: {}", response));
+  }
+
+  private void mapOptionsToQuestions(List<QuestionDto> questionDtos, List<OptionResponse> optionResponses) {
+    Map<Long, QuestionDto> questionDtoMap = questionDtos.stream()
+        .collect(Collectors.toMap(QuestionDto::getId, Function.identity()));
+    optionResponses.forEach(optionResponse -> {
+      QuestionDto questionDto = questionDtoMap.get(optionResponse.getQuestionId());
+      if (questionDto.getOptions() == null) {
+        questionDto.setOptions(new ArrayList<>());
+      }
+      questionDto.getOptions().add(optionResponse);
+    });
   }
 
 

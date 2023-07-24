@@ -3,6 +3,7 @@ package com.juan.itb.vrbackend.controller;
 import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
 import com.juan.itb.vrbackend.dto.response.BaseResponse;
+import com.juan.itb.vrbackend.dto.response.QuizDto;
 import com.juan.itb.vrbackend.entity.Quiz;
 import com.juan.itb.vrbackend.entity.Response;
 import com.juan.itb.vrbackend.service.api.QuizService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +29,14 @@ public class QuizController {
   private QuizService quizService;
 
   @PostMapping
-  public Mono<BaseResponse<Quiz>> register(@Valid @RequestBody CreateQuizRequest createQuizRequest) {
+  public Mono<BaseResponse<Quiz>> createQuiz(@Valid @RequestBody CreateQuizRequest createQuizRequest) {
     return quizService.createQuiz(createQuizRequest)
+        .map(BaseResponse::ok);
+  }
+
+  @GetMapping(path = "/{id}")
+  public Mono<BaseResponse<QuizDto>> getQuiz(@PathVariable Long id) {
+    return quizService.getQuiz(id)
         .map(BaseResponse::ok);
   }
 
