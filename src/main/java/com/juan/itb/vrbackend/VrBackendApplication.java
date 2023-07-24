@@ -18,7 +18,7 @@ public class VrBackendApplication {
 	}
 
 	@Bean
-	@Profile({"default"})
+	@Profile({"!prod", "dev"})
 	ConnectionFactoryInitializer initializer(@Qualifier("connectionFactory") ConnectionFactory connectionFactory) {
 		ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
 		initializer.setConnectionFactory(connectionFactory);
