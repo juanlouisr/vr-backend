@@ -2,7 +2,6 @@ package com.juan.itb.vrbackend.service.impl;
 
 import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
-import com.juan.itb.vrbackend.dto.request.QuestionRequest;
 import com.juan.itb.vrbackend.entity.Option;
 import com.juan.itb.vrbackend.entity.Question;
 import com.juan.itb.vrbackend.entity.Quiz;
@@ -52,10 +51,10 @@ public class QuizServiceImpl implements QuizService {
             .collectList()
             .flatMapMany(questionRepository::saveAll)
             .doOnNext(createdQuestion -> log.info("created question: {}", createdQuestion))
-            .flatMap(createdQuestion -> Flux.fromIterable(createQuizRequest.getQuestions())
-                .flatMapIterable(QuestionRequest::getOptions)
+            .zipWithIterable(createQuizRequest.getQuestions())
+            .flatMap(question -> Flux.fromIterable(question.getT2().getOptions())
                 .map(option -> Option.builder()
-                    .questionId(createdQuestion.getId())
+                    .questionId(question.getT1().getId())
                     .optionText(option.getOptionText())
                     .isCorrect(option.getIsCorrect())
                     .build())
