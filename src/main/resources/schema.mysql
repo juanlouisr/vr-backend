@@ -1,0 +1,36 @@
+CREATE TABLE IF NOT EXISTS quizzes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quiz_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    hashed_password VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quiz_id INT NOT NULL,
+    question_text TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    option_text TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS responses (
+    user_id INT NOT NULL,
+    quiz_id INT NOT NULL,
+    question_id INT NOT NULL,
+    option_id INT NOT NULL,
+    response_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(10) NOT NULL DEFAULT 'SAVED',
+    PRIMARY KEY (user_id, quiz_id, question_id)
+);
