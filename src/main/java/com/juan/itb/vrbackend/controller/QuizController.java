@@ -30,6 +30,7 @@ public class QuizController {
 
   @PostMapping
   public Mono<BaseResponse<Quiz>> createQuiz(@Valid @RequestBody CreateQuizRequest createQuizRequest) {
+    log.info("Creating Quiz: {}", createQuizRequest);
     return quizService.createQuiz(createQuizRequest)
         .map(BaseResponse::ok);
   }
