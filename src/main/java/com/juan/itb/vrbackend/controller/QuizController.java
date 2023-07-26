@@ -47,7 +47,7 @@ public class QuizController {
         .map(BaseResponse::ok);
   }
 
-  @GetMapping(path = "/score")
+  @GetMapping(path = "/question-count")
   public Mono<BaseResponse<Long>> getQuestionCount(@Valid @RequestParam Long quizId) {
     return quizService.getQuizQuestionCount(quizId)
         .map(BaseResponse::ok);
