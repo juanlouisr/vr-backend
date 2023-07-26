@@ -93,8 +93,13 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Mono<Integer> getQuizScoreForUser(Long userId, Long quizId) {
+  public Mono<Long> getQuizScoreForUser(Long userId, Long quizId) {
     return responseRepository.calculateScore(userId, quizId);
+  }
+
+  @Override
+  public Mono<Long> getQuizQuestionCount(Long quizId) {
+    return questionRepository.findQuestionByQuizId(quizId).count();
   }
 
   @Override

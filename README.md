@@ -4,7 +4,7 @@ contact me if you're continuing this project
 
 ## prod env variables
 
-# Railway deployment
+### Railway deployment
 
 Create Empty Project, add mysql, add service from GitHub repo (vr-backend)
 

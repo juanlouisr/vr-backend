@@ -12,7 +12,9 @@ public interface QuizService {
 
   Mono<QuizDto> getQuiz(Long id);
 
-  Mono<Integer> getQuizScoreForUser(Long userId, Long quizId);
+  Mono<Long> getQuizScoreForUser(Long userId, Long quizId);
+
+  Mono<Long> getQuizQuestionCount(Long quizId);
 
   Mono<Response> createResponse(CreateResponseRequest createResponseRequest);
 }
