@@ -2,12 +2,14 @@ package com.juan.itb.vrbackend.controller;
 
 import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
+import com.juan.itb.vrbackend.dto.request.FinalizeResponseRequest;
 import com.juan.itb.vrbackend.dto.response.BaseResponse;
 import com.juan.itb.vrbackend.dto.response.QuizDto;
 import com.juan.itb.vrbackend.entity.Quiz;
 import com.juan.itb.vrbackend.entity.Response;
 import com.juan.itb.vrbackend.service.api.QuizService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +55,21 @@ public class QuizController {
         .map(BaseResponse::ok);
   }
 
-  @PostMapping(path = "/answer")
+  @GetMapping(path = "/response")
+  public Mono<BaseResponse<List<Response>>> getResponse(@Valid @RequestParam Long userId, @Valid @RequestParam Long quizId) {
+    return quizService.getResponse(userId, quizId)
+        .map(BaseResponse::ok);
+  }
+
+  @PostMapping(path = "/response")
   public Mono<BaseResponse<Response>> saveAnswer(@Valid @RequestBody CreateResponseRequest createResponseRequest) {
     return quizService.createResponse(createResponseRequest)
+        .map(BaseResponse::ok);
+  }
+
+  @PostMapping(path = "/response/finalize")
+  public Mono<BaseResponse<Long>> finalizeResponse(@Valid @RequestBody FinalizeResponseRequest request) {
+    return quizService.finalizeResponse(request)
         .map(BaseResponse::ok);
   }
 }

@@ -24,9 +24,6 @@ public class ErrorHandler {
     } else if (ex instanceof IllegalArgumentException) {
       status = HttpStatus.UNAUTHORIZED;
     }
-
-    String errorMessage = status.getReasonPhrase();
-    ex.printStackTrace();
-    return BaseResponse.error(errorMessage, ex.getMessage());
+    return BaseResponse.error(status.getReasonPhrase(), ex.getMessage());
   }
 }

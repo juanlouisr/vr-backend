@@ -12,14 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateResponseRequest {
+public class FinalizeResponseRequest {
 
   @NotNull
   private Long userId;
   @NotNull
   private Long quizId;
-  @NotNull
-  private Long questionId;
-  @NotNull
-  private Long optionId;
 }

@@ -1,7 +1,9 @@
 package com.juan.itb.vrbackend.service.impl;
 
+import com.juan.itb.vrbackend.dto.enums.ResponseStatus;
 import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
+import com.juan.itb.vrbackend.dto.request.FinalizeResponseRequest;
 import com.juan.itb.vrbackend.dto.response.OptionResponse;
 import com.juan.itb.vrbackend.dto.response.QuestionDto;
 import com.juan.itb.vrbackend.dto.response.QuizDto;
@@ -98,17 +100,37 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
+  public Mono<List<Response>> getResponse(Long userId, Long quizId) {
+    return responseRepository.findAllByUserIdAndQuizId(userId, quizId).collectList();
+  }
+
+  @Override
   public Mono<Long> getQuizQuestionCount(Long quizId) {
     return questionRepository.findQuestionByQuizId(quizId).count();
   }
 
   @Override
   public Mono<Response> createResponse(CreateResponseRequest createResponseRequest) {
-    return responseRepository.save(BeanMapper.map(createResponseRequest, Response.class))
+    return responseRepository.findByUserIdAndQuizIdAndQuestionId(createResponseRequest.getUserId(),
+            createResponseRequest.getQuizId(), createResponseRequest.getQuestionId())
+        .doOnNext(this::validateNotFinal)
+        .doOnNext(response -> response.setOptionId(createResponseRequest.getOptionId()))
+        .flatMap(response -> responseRepository.updateResponse(response.getOptionId(),
+                response.getUserId(), response.getQuizId(), response.getQuestionId())
+            .thenReturn(response))
+        .switchIfEmpty(Mono.defer(
+            () -> responseRepository.save(BeanMapper.map(createResponseRequest, Response.class))))
         .doOnNext(response -> log.info("quiz response: {}", response));
   }
 
-  private void mapOptionsToQuestions(List<QuestionDto> questionDtos, List<OptionResponse> optionResponses) {
+  @Override
+  public Mono<Long> finalizeResponse(FinalizeResponseRequest request) {
+    return responseRepository.updateResponseStatus(ResponseStatus.FINAL, request.getUserId(),
+        request.getQuizId());
+  }
+
+  private void mapOptionsToQuestions(List<QuestionDto> questionDtos,
+      List<OptionResponse> optionResponses) {
     Map<Long, QuestionDto> questionDtoMap = questionDtos.stream()
         .collect(Collectors.toMap(QuestionDto::getId, Function.identity()));
     optionResponses.forEach(optionResponse -> {
@@ -120,5 +142,10 @@ public class QuizServiceImpl implements QuizService {
     });
   }
 
+  private void validateNotFinal(Response response) {
+    if (ResponseStatus.FINAL.equals(response.getStatus())) {
+      throw new RuntimeException("finalized answer, can't update");
+    }
+  }
 
 }
