@@ -5,9 +5,11 @@ import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
 import com.juan.itb.vrbackend.dto.request.FinalizeResponseRequest;
 import com.juan.itb.vrbackend.dto.response.BaseResponse;
 import com.juan.itb.vrbackend.dto.response.QuizDto;
+import com.juan.itb.vrbackend.dto.response.QuizIdentityResponse;
 import com.juan.itb.vrbackend.entity.Quiz;
 import com.juan.itb.vrbackend.entity.Response;
 import com.juan.itb.vrbackend.service.api.QuizService;
+import com.juan.itb.vrbackend.service.api.TokenGeneratorService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,9 @@ import reactor.core.publisher.Mono;
 public class QuizController {
   @Autowired
   private QuizService quizService;
+
+  @Autowired
+  private TokenGeneratorService tokenGeneratorService;
 
   @PostMapping
   public Mono<BaseResponse<Quiz>> createQuiz(@Valid @RequestBody CreateQuizRequest createQuizRequest) {
@@ -70,6 +75,18 @@ public class QuizController {
   @PostMapping(path = "/response/finalize")
   public Mono<BaseResponse<Long>> finalizeResponse(@Valid @RequestBody FinalizeResponseRequest request) {
     return quizService.finalizeResponse(request)
+        .map(BaseResponse::ok);
+  }
+
+  @GetMapping("/generate-token")
+  public Mono<BaseResponse<String>> generateToken(@RequestParam String data) {
+    return Mono.just(tokenGeneratorService.generateToken(data))
+        .map(BaseResponse::ok);
+  }
+
+  @GetMapping("/decode-token")
+  public Mono<BaseResponse<QuizIdentityResponse>> decodeToken(@RequestParam String data) {
+    return quizService.decodeToken(data)
         .map(BaseResponse::ok);
   }
 }

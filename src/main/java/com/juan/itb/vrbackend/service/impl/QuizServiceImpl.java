@@ -7,6 +7,7 @@ import com.juan.itb.vrbackend.dto.request.FinalizeResponseRequest;
 import com.juan.itb.vrbackend.dto.response.OptionResponse;
 import com.juan.itb.vrbackend.dto.response.QuestionDto;
 import com.juan.itb.vrbackend.dto.response.QuizDto;
+import com.juan.itb.vrbackend.dto.response.QuizIdentityResponse;
 import com.juan.itb.vrbackend.entity.Option;
 import com.juan.itb.vrbackend.entity.Question;
 import com.juan.itb.vrbackend.entity.Quiz;
@@ -16,6 +17,7 @@ import com.juan.itb.vrbackend.repository.QuestionRepository;
 import com.juan.itb.vrbackend.repository.QuizRepository;
 import com.juan.itb.vrbackend.repository.ResponseRepository;
 import com.juan.itb.vrbackend.service.api.QuizService;
+import com.juan.itb.vrbackend.service.api.TokenGeneratorService;
 import com.juan.itb.vrbackend.util.BeanMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,9 @@ public class QuizServiceImpl implements QuizService {
 
   @Autowired
   private ResponseRepository responseRepository;
+
+  @Autowired
+  private TokenGeneratorService tokenGeneratorService;
 
   @Override
   public Mono<Quiz> createQuiz(CreateQuizRequest createQuizRequest) {
@@ -127,6 +132,16 @@ public class QuizServiceImpl implements QuizService {
   public Mono<Long> finalizeResponse(FinalizeResponseRequest request) {
     return responseRepository.updateResponseStatus(ResponseStatus.FINAL, request.getUserId(),
         request.getQuizId());
+  }
+
+  @Override
+  public Mono<QuizIdentityResponse> decodeToken(String token) {
+    return Mono.just(tokenGeneratorService.decodeToken(token))
+        .map(data -> data.split("-"))
+        .map(data -> QuizIdentityResponse.builder()
+            .userId(Long.valueOf(data[0]))
+            .quizId(Long.valueOf(data[1]))
+            .build());
   }
 
   private void mapOptionsToQuestions(List<QuestionDto> questionDtos,

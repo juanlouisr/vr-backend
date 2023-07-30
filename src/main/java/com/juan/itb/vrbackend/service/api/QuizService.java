@@ -4,6 +4,7 @@ import com.juan.itb.vrbackend.dto.request.CreateQuizRequest;
 import com.juan.itb.vrbackend.dto.request.CreateResponseRequest;
 import com.juan.itb.vrbackend.dto.request.FinalizeResponseRequest;
 import com.juan.itb.vrbackend.dto.response.QuizDto;
+import com.juan.itb.vrbackend.dto.response.QuizIdentityResponse;
 import com.juan.itb.vrbackend.entity.Quiz;
 import com.juan.itb.vrbackend.entity.Response;
 import java.util.List;
@@ -23,4 +24,6 @@ public interface QuizService {
   Mono<Response> createResponse(CreateResponseRequest createResponseRequest);
 
   Mono<Long> finalizeResponse(FinalizeResponseRequest finalizeResponseRequest);
+
+  Mono<QuizIdentityResponse> decodeToken(String token);
 }
