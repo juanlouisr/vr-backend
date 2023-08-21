@@ -6,7 +6,7 @@ import com.github.dozermapper.core.Mapper;
 public class BeanMapper {
   private final static Mapper mapper = DozerBeanMapperBuilder.buildDefault();
 
-  public BeanMapper() {
+  private BeanMapper() {
   }
 
   public static <S, C> C map(S source, Class<C> clazz) {

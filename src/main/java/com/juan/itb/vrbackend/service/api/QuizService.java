@@ -25,5 +25,5 @@ public interface QuizService {
 
   Mono<Long> finalizeResponse(FinalizeResponseRequest finalizeResponseRequest);
 
-  Mono<QuizIdentityResponse> decodeToken(String token);
+  Mono<QuizIdentityResponse> decryptToken(String token);
 }

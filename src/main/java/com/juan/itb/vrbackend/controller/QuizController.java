@@ -85,8 +85,8 @@ public class QuizController {
   }
 
   @GetMapping("/decode-token")
-  public Mono<BaseResponse<QuizIdentityResponse>> decodeToken(@RequestParam String data) {
-    return quizService.decodeToken(data)
+  public Mono<BaseResponse<QuizIdentityResponse>> decryptToken(@RequestParam String data) {
+    return quizService.decryptToken(data)
         .map(BaseResponse::ok);
   }
 }

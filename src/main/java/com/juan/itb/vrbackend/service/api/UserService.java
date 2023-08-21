@@ -1,11 +1,9 @@
 package com.juan.itb.vrbackend.service.api;
 
-import com.juan.itb.vrbackend.dto.request.LoginRequest;
 import com.juan.itb.vrbackend.dto.request.RegisterRequest;
 import com.juan.itb.vrbackend.entity.User;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
   Mono<User> registerUser(RegisterRequest registerRequest);
-  Mono<User> loginUser(LoginRequest loginRequest);
 }

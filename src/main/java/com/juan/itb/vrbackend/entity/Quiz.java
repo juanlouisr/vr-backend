@@ -31,7 +31,4 @@ public class Quiz {
   @Column("created_at")
   @Default
   private Instant createdAt = Instant.now();
-//
-//  @MappedCollection(keyColumn = "quiz_id", idColumn = "quiz_id")
-//  private List<Question> questions;
 }

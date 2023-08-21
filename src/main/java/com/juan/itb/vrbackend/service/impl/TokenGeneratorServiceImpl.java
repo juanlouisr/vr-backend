@@ -31,7 +31,7 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
   }
 
   @Override
-  public String decodeToken(String token) {
+  public String decryptToken(String token) {
     try {
       byte[] nonce = new byte[NONCE_SIZE];
       token = bytesToHex(nonce) + token;
@@ -46,28 +46,28 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
       byte[] decryptedData = decrypt(encryptedData, nonce, secretKey.getBytes());
       return new String(decryptedData);
     } catch (Exception e) {
-      throw new RuntimeException("Failed to decode token.", e);
+      throw new RuntimeException("Failed to decrypt token.", e);
     }
   }
 
   private byte[] decrypt(byte[] encryptedData, byte[] nonce, byte[] key) {
-    StreamCipher chacha = new Salsa20Engine();
-    chacha.init(false, new ParametersWithIV(new KeyParameter(key), nonce));
+    StreamCipher salsa = new Salsa20Engine();
+    salsa.init(false, new ParametersWithIV(new KeyParameter(key), nonce));
     byte[] decrypted = new byte[encryptedData.length];
-    chacha.processBytes(encryptedData, 0, encryptedData.length, decrypted, 0);
+    salsa.processBytes(encryptedData, 0, encryptedData.length, decrypted, 0);
     return decrypted;
   }
 
   private byte[] encrypt(byte[] data, byte[] nonce, byte[] key) {
-    StreamCipher chacha = new Salsa20Engine();
+    StreamCipher salsa = new Salsa20Engine();
     log.info("key size: {}", key.length);
-    chacha.init(true, new ParametersWithIV(new KeyParameter(key), nonce));
+    salsa.init(true, new ParametersWithIV(new KeyParameter(key), nonce));
     byte[] encrypted = new byte[data.length];
-    chacha.processBytes(data, 0, data.length, encrypted, 0);
+    salsa.processBytes(data, 0, data.length, encrypted, 0);
     return encrypted;
   }
 
-  private byte[] hexToBytes(String hex) {
+  public byte[] hexToBytes(String hex) {
     int len = hex.length();
     byte[] data = new byte[len / 2];
     for (int i = 0; i < len; i += 2) {
@@ -77,7 +77,7 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
     return data;
   }
 
-  private String bytesToHex(byte[] bytes) {
+  public String bytesToHex(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
     for (byte b : bytes) {
       sb.append(String.format("%02x", b));
@@ -85,7 +85,7 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
     return sb.toString();
   }
 
-  private byte[] generateRandomNonce() {
+  public byte[] generateRandomNonce() {
     // Implement a secure random number generator here to fill the nonce with random bytes
     // For simplicity, we will use all zeros here, but in practice, you should use a secure random generator.
     return new byte[NONCE_SIZE];

@@ -1,6 +1,5 @@
 package com.juan.itb.vrbackend.service.impl;
 
-import com.juan.itb.vrbackend.dto.request.LoginRequest;
 import com.juan.itb.vrbackend.dto.request.RegisterRequest;
 import com.juan.itb.vrbackend.entity.User;
 import com.juan.itb.vrbackend.repository.UserRepository;
@@ -31,12 +30,4 @@ public class UserServiceImpl implements UserService {
         .hashedPassword(passwordEncoder.encode(registerRequest.getPassword()))
         .build());
   }
-
-  @Override
-  public Mono<User> loginUser(LoginRequest loginRequest) {
-    return userRepository.findUserByUsername(loginRequest.getUsername())
-        .filter(user -> passwordEncoder.matches(loginRequest.getPassword(), user.getHashedPassword()))
-        .switchIfEmpty(Mono.error(new IllegalArgumentException()));
-  }
-
 }

@@ -25,7 +25,4 @@ public class Question {
 
   @Column("question_text")
   private String questionText;
-
-//  @MappedCollection(keyColumn = "question_id", idColumn = "question_id")
-//  private List<Option> options;
 }

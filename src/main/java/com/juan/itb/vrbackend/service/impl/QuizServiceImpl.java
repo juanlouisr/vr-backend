@@ -135,8 +135,8 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Mono<QuizIdentityResponse> decodeToken(String token) {
-    return Mono.just(tokenGeneratorService.decodeToken(token))
+  public Mono<QuizIdentityResponse> decryptToken(String token) {
+    return Mono.just(tokenGeneratorService.decryptToken(token))
         .map(data -> data.split("-"))
         .map(data -> QuizIdentityResponse.builder()
             .userId(Long.valueOf(data[0]))
