@@ -1,6 +1,6 @@
 ## VR Backend
 
-contact me if you're continuing this project
+contact me if you're continuing this project (louis.juan@proton.me)
 
 ## prod env variables
 
